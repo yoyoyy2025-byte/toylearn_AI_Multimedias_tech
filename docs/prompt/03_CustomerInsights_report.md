@@ -12,9 +12,9 @@ https://docs.google.com/spreadsheets/d/1KZlqe6HvfufWMOejrlQbxfvGMaH_25KUrYMoUsJZ
 4. 다음 과제 제안
 ```
 
+## output
 
-
-
+```
 ## 고객 만족도 분석: 산업별 AI 솔루션의 약진과 거버넌스 서비스의 과제
 
 ### 고객 만족도 조사 결과 분석 및 제안
