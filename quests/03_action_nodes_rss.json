@@ -1,0 +1,196 @@
+{
+  "name": "03_action_nodes_rss",
+  "nodes": [
+    {
+      "parameters": {
+        "chatId": "6998903403",
+        "text": "=나야나 \n제목 : \n발행일 : ",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1584,
+        256
+      ],
+      "id": "687f3f13-150f-4243-9a25-bbecbb566f15",
+      "name": "Send a text message",
+      "webhookId": "64c84912-e929-45ad-ba43-f4db0d473cee",
+      "credentials": {
+        "telegramApi": {
+          "id": "70cIxWP07yBBH2sO",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        928,
+        256
+      ],
+      "id": "2ed1fdcb-b754-4d86-9daf-0eaab8a13d3f",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://www.yna.co.kr/rss/industry.xml",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        1136,
+        448
+      ],
+      "id": "3351c81b-685d-419f-87cf-a5b69e0929ab",
+      "name": "RSS Read"
+    },
+    {
+      "parameters": {
+        "maxItems": 3,
+        "keep": "lastItems"
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        1360,
+        448
+      ],
+      "id": "05b1188d-5968-4309-bf55-6af51d552fd6",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "chatId": "6998903403",
+        "text": "=나야나\n제목 : {{ $json.title }}\n발행일 : {{ $json.pubDate }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1584,
+        448
+      ],
+      "id": "6247d1a8-b908-4a77-b6f8-9a7295e9c671",
+      "name": "Send a text message1",
+      "webhookId": "64c84912-e929-45ad-ba43-f4db0d473cee",
+      "credentials": {
+        "telegramApi": {
+          "id": "70cIxWP07yBBH2sO",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "maxItems": 3
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        1360,
+        256
+      ],
+      "id": "e5433374-bc3a-40cf-aff5-0ced2619cbd6",
+      "name": "Limit1"
+    },
+    {
+      "parameters": {
+        "url": "https://rss.nytimes.com/services/xml/rss/nyt/Technology.xml",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        1152,
+        256
+      ],
+      "id": "a63aa24e-0a81-4610-a740-b5cde74e4ada",
+      "name": "RSS Read1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "RSS Read",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RSS Read1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit1": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read1": {
+      "main": [
+        [
+          {
+            "node": "Limit1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "908945ce-93e9-40f9-ac9b-c30196c826cd",
+  "meta": {
+    "instanceId": "b58833f0af2a25b25207d4561a8fbf9fd21bbd975d646b4d3b4d9da823e096ce"
+  },
+  "id": "iEqWDer7DdsirfKJ",
+  "tags": []
+}
