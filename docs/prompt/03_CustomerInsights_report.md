@@ -1,6 +1,7 @@
 ## prompt
 
 https://docs.google.com/spreadsheets/d/1KZlqe6HvfufWMOejrlQbxfvGMaH_25KUrYMoUsJZQxQ/edit?usp=sharing
+
 너는 20년 차의 통계 분석 전문가야 
 1. 핵심 인사이트를 강조하는 제목
 
