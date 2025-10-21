@@ -3,7 +3,7 @@
 
 
 
-[링크1]에 있는 내용을 업무 회의록 형식으로 회의록 작성자는 이용기 야
+[입력값]에 있는 내용을 업무 회의록 형식으로 회의록 작성자는 이용기 야
 
 
 
@@ -15,7 +15,7 @@
 
 
 
-[링크1] https://docs.google.com/document/d/1wWXJxOSIHSp9AsurrPVg-xY4z-3VQhSrKiCSeEfgAys/edit?tab=t.0
+[입력값] https://docs.google.com/document/d/1wWXJxOSIHSp9AsurrPVg-xY4z-3VQhSrKiCSeEfgAys/edit?tab=t.0
 
 
 
