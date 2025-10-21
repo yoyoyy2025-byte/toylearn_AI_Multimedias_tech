@@ -1,25 +1,50 @@
-
+## prompt
 너는 사무 경력 20년을 가진 전문가야
 
-[입력값]에 있는 내용을 업무 회의록 형식으로 회의록 작성자는 이용기 야
+
+
+[링크1]에 있는 내용을 업무 회의록 형식으로 회의록 작성자는 이용기 야
+
+
 
 회의록 [출력값]형식을 넣어서 작성되야해
 
 
 
-[입력값] https://docs.google.com/document/d/1sNeN3GRr044wWSfXkF7h12mQ9arGzgoEdD_eUM8YLOU/edit?tab=t.0
+
+
+
+
+[링크1] https://docs.google.com/document/d/1wWXJxOSIHSp9AsurrPVg-xY4z-3VQhSrKiCSeEfgAys/edit?tab=t.0
+
+
+
+
 
 
 
 [출력값]
 
+
+
 - 회의 주제 : 
+
 - 회의 일시 :
+
 - 회의 장소 :
+
 - 회의록 작성 날자 :
+
 - 참석자 :
-- 회의 안건 및 주요 논의 내용 :
+
+- 대화 내용 : 
+
+- 회의 안건 : 
+
+- 주요 논의 내용 :
+
 - 결정 사항 :
+
 - 특이 사항 : 
 
 ## output1
