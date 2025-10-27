@@ -1,0 +1,473 @@
+{
+  "name": "09_control_if",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "예비이력서",
+        "formDescription": "정보입력",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "주관자Email",
+              "placeholder": "주관자Email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "참여인원",
+              "placeholder": "참여인원",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "날짜",
+              "placeholder": "날짜"
+            },
+            {
+              "fieldLabel": "회의내용",
+              "fieldType": "textarea",
+              "placeholder": "회의내용"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -544,
+        64
+      ],
+      "id": "96459cae-93b9-47e7-9402-4aa5f35fa330",
+      "name": "On form submission",
+      "webhookId": "2d8101db-19cd-4a36-b66a-4a4346cc3282"
+    },
+    {
+      "parameters": {
+        "operation": "copy",
+        "fileId": {
+          "__rl": true,
+          "value": "1APF3LyuxAlna6MlM6tDr_2IvEFFVIkqYdq0piFSgSvM",
+          "mode": "list",
+          "cachedResultName": "회의 주제 : 초록숲 재단 '내 숨을 위한 한 평의 숲' 공익 캠페인 킥오프 미팅",
+          "cachedResultUrl": "https://docs.google.com/document/d/1APF3LyuxAlna6MlM6tDr_2IvEFFVIkqYdq0piFSgSvM/edit?usp=drivesdk"
+        },
+        "name": "=회의록 기록- {{ $json['날짜'] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "f3bba804-5143-4dea-81e4-042ca3351e45",
+      "name": "Copy file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "1Q6UZy2Coljzyj0e",
+          "name": "Google Drive account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "=https://docs.google.com/document/d/1APF3LyuxAlna6MlM6tDr_2IvEFFVIkqYdq0piFSgSvM/edit?usp=sharing",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "replaceAll",
+              "text": "=[Email]",
+              "replaceText": "={{ $('If').item.json['주관자Email'] }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[Participants]",
+              "replaceText": "={{ $('If').item.json['참여인원'] }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[Meeting Agenda]",
+              "replaceText": "={{ $json.content.parts[0].text }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[Date]",
+              "replaceText": "={{ $('If').item.json['날짜'] }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        608,
+        0
+      ],
+      "id": "e7709fb5-19c4-442c-a598-26bb15df420b",
+      "name": "Update a document",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "z7FxInMDc1xM62vk",
+          "name": "Google Docs account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.documentId }}",
+          "mode": "id"
+        },
+        "options": {
+          "googleFileConversion": {
+            "conversion": {
+              "docsToFormat": "application/pdf"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        816,
+        0
+      ],
+      "id": "dcc09551-2fe9-4665-bfaf-2bee8f1fe9b0",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "1Q6UZy2Coljzyj0e",
+          "name": "Google Drive account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "={{ $('Copy file').item.json.name }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1emsY8BCay1sJEgy4b1WjyAHpbBGOlfnR",
+          "mode": "list",
+          "cachedResultName": "n8ns",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1emsY8BCay1sJEgy4b1WjyAHpbBGOlfnR"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1024,
+        0
+      ],
+      "id": "b071c78c-697d-4f65-a658-fa05cbd092c8",
+      "name": "Upload file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "1Q6UZy2Coljzyj0e",
+          "name": "Google Drive account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1X3DHAkbbLDyvF6vAeD6M6PJFC_-2BFMUNvlNjarQceQ/edit?usp=sharing",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "시트1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1X3DHAkbbLDyvF6vAeD6M6PJFC_-2BFMUNvlNjarQceQ/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "주관자": "={{ $('If').item.json['주관자Email'] }}",
+            "참여 인원": "={{ $('If').item.json['참여인원'] }}",
+            " 회의 주제": "={{ $('Message a model').item.json.content.parts[0].text }}",
+            "날짜(입력 날짜)": "={{ $('If').item.json['날짜'] }}",
+            "PDF 링크": "={{ $json.webViewLink }}"
+          },
+          "matchingColumns": [
+            "날짜(입력 날짜)"
+          ],
+          "schema": [
+            {
+              "id": "주관자",
+              "displayName": "주관자",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "참여 인원",
+              "displayName": "참여 인원",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": " 회의 주제",
+              "displayName": " 회의 주제",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "날짜(입력 날짜)",
+              "displayName": "날짜(입력 날짜)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "PDF 링크",
+              "displayName": "PDF 링크",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1232,
+        0
+      ],
+      "id": "7bd39a63-74f4-4a60-80b9-167117b76c63",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CHhdRkmTrR78qKO3",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "4747a219-cf46-4161-9b43-db24b04502cf",
+              "leftValue": "={{ $json['회의내용'] }}",
+              "rightValue": "=",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -288,
+        64
+      ],
+      "id": "d83bdc2c-6029-4b6b-8f57-57e5197d4523",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.email }}",
+        "subject": "공지] 예비지원서 누락 정보",
+        "message": "내 소개 항목 누락",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        144
+      ],
+      "id": "c71b0e83-181f-4e2b-9d46-9040b6b65960",
+      "name": "Send a message",
+      "webhookId": "2f37b56c-0277-4274-88a2-6f6ec40f46f1",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "uA1VT3eIp9sTZtOv",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "={{ $('If').item.json['회의내용'] }} 내용을 가지고 주제선정 30자 로 정리"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        256,
+        0
+      ],
+      "id": "38826dcc-6b06-4ea8-ac5e-a6e8ed532ea5",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "gNw7sbDLqNOhYA1L",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "On form submission": [
+      {
+        "json": {
+          "주관자Email": "yoyoyy2025@gmail.com",
+          "참여인원": "4",
+          "날짜": "20251023",
+          "회의내용": "캠페인 핵심 메시지: 단순 정보 전달을 넘어, 시민들의 '연대감'과 '희망'을 자극하는 방향으로 설정함.\r\n",
+          "submittedAt": "2025-10-27T16:55:32.844+09:00",
+          "formMode": "test"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Copy file": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload file": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Copy file",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Update a document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "613c730e-664f-492f-98eb-53c6d7ca071b",
+  "meta": {
+    "instanceId": "be26a17ab902861eb587c340dc085ae5e45bee28ee2c1bd68780aff8c51b4b89"
+  },
+  "id": "kVpOi70gLVPQOW7C",
+  "tags": []
+}
