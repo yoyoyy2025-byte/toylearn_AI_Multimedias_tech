@@ -1,0 +1,189 @@
+{
+  "name": "16_multimedia_images.json",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "프롬프트로 결과 받기",
+        "formDescription": "프롬프트로 결과 받기",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "input_text",
+              "fieldType": "file"
+            },
+            {
+              "fieldLabel": "프롬프트",
+              "placeholder": "원하는 내용",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "파일이름 ",
+              "placeholder": "양손에 음식가득"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -384,
+        0
+      ],
+      "id": "f720fdb2-de02-4eb6-a243-36574d392a30",
+      "name": "On form submission",
+      "webhookId": "afc9d541-8b90-4f9e-b2a9-f1bda79a2996"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-goog-api-key",
+              "value": "AIzaSyAgEF4d7hR_yJK4Q8g39FbUTdNfCAl1Q0o"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n      \"contents\": [{\n        \"parts\":[\n            {\"text\": \"{{ $('On form submission').item.json['프롬프트'] }}\"},\n            {\n              \"inline_data\": {\n                \"mime_type\":\"{{ $('On form submission').item.json.input_text[0].mimetype }}\",\n                \"data\": \"{{ $json.data }}\"\n              }\n            }\n        ]\n      }]\n    }",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        112,
+        0
+      ],
+      "id": "11382ab9-3028-412f-a3e2-f28b7c3bef9e",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "candidates[0].content.parts[1].inlineData.data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        304,
+        0
+      ],
+      "id": "4e2223ef-db93-47ec-8d9a-3a8b12029b34",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "binaryPropertyName": "input_text",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -176,
+        0
+      ],
+      "id": "092987cf-bf5a-462b-acd9-cec73c877af6",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "name": "={{ $('On form submission').item.json['파일이름 '] }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1uE3iF1RODmsE1S8tLmi64-rSVLz2r2oE",
+          "mode": "list",
+          "cachedResultName": "images",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1uE3iF1RODmsE1S8tLmi64-rSVLz2r2oE"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        512,
+        0
+      ],
+      "id": "5b18e0e6-14eb-4bd5-91d0-8636f53c09e5",
+      "name": "Upload file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "QiifJBpwJnUvOBcs",
+          "name": "Google Drive account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "803d57f4-6a4e-4908-b755-50606d289409",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5f0a862ca69cb298a4e504f8a47b10e062b10f6dd4a85288950ab4d6fba0e665"
+  },
+  "id": "xhvoEzYiUF0MkKe4",
+  "tags": []
+}
