@@ -1,0 +1,1326 @@
+{
+  "name": "project_generate_multimedias",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "6bdf0a5c-9daf-407d-b2c3-500bf3f75db3",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "url": "https://api.newswire.co.kr/rss/industry/1000",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "ff7018ce-3dae-4fc6-a75c-b9a0c9bcd642",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-pro",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-pro"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "={{ $json.rss.channel.item[0].link }} 내용을 기반으로 숏츠 영상을 만들기위해 제목을 만들고 내용을 250자 이내로 핵심 요약 시나리오 작성하고 json 형식으로 [출력형식]에 맞춰서 정리해줘 \n\n[출력형식]\n\ntile_key = \"텍스트\"\ndata_key = \"텍스트\""
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        832,
+        0
+      ],
+      "id": "abef58c9-f06f-467f-b162-7e8585e04255",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "kgvLkbCQMyCJOGLS",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e34269a6-4d04-4b9c-97a4-14d69c9a0206",
+              "name": "data",
+              "value": "={{ $json.content.parts[0].text }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1184,
+        0
+      ],
+      "id": "9c4da081-5af3-47d4-9058-957146ea53cd",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1KqTNLSOay4oNK8ag-_cQ1QRHhcd10m2mrfKErbptDi4",
+          "mode": "list",
+          "cachedResultName": "건강지킴이",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1KqTNLSOay4oNK8ag-_cQ1QRHhcd10m2mrfKErbptDi4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "시트1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1KqTNLSOay4oNK8ag-_cQ1QRHhcd10m2mrfKErbptDi4/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "key_date": "={{ $today }}",
+            "Status": "생성완료",
+            "Link or Contents": "={{ $json.data.data_key }}"
+          },
+          "matchingColumns": [
+            "key_date"
+          ],
+          "schema": [
+            {
+              "id": "key_date",
+              "displayName": "key_date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Link or Contents",
+              "displayName": "Link or Contents",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Subject",
+              "displayName": "Subject",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "scene_Narration",
+              "displayName": "scene_Narration",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "scene_description",
+              "displayName": "scene_description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "shorts_URL",
+              "displayName": "shorts_URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1408,
+        0
+      ],
+      "id": "905a6e1e-294e-44a9-9aa2-cca0ef8ed27b",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Cz2gX5oVbFdKVJYZ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8c7c22d6-bfef-447f-8ad8-a6d12be8f3a3",
+              "name": "data.data_key",
+              "value": "={{ $('Edit Fields').item.json.data.data_key }}",
+              "type": "string"
+            },
+            {
+              "id": "0b79a0ca-0f19-4773-a979-ce498efce8ee",
+              "name": "data.tile_key",
+              "value": "={{ $('Edit Fields').item.json.data.tile_key }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1648,
+        0
+      ],
+      "id": "79a5457a-7c92-4976-883a-0428ce791379",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-pro",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-pro"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "={{ JSON.stringify($json) }} 내용에 맞는 나레이션 3개와 이미지 3개의 프롬프트 만들고 \nJSON형식으로 작성 \n\n\n\n[나레이션]\n\n\"scene\" : 숫자\n\"narration\" : 텍스트\n\"duration\" : 숫자\n\n[이미지]\n\n\"scene\" : 숫자\n\"description\" : 텍스트\n\"style\" : 내용에 맞는\n\"image_url\" : \n"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        1856,
+        0
+      ],
+      "id": "5531274f-7419-43f2-a81f-e45d988a9e1d",
+      "name": "Message a model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "kgvLkbCQMyCJOGLS",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "88131149-be7d-46db-be04-67b865c50577",
+              "name": "content.parts[0].text",
+              "value": "={{ $json.content.parts[0].text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2208,
+        0
+      ],
+      "id": "b99a485c-ac14-457a-a970-f12d52f1de71",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1KqTNLSOay4oNK8ag-_cQ1QRHhcd10m2mrfKErbptDi4",
+          "mode": "list",
+          "cachedResultName": "건강지킴이",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1KqTNLSOay4oNK8ag-_cQ1QRHhcd10m2mrfKErbptDi4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "시트1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1KqTNLSOay4oNK8ag-_cQ1QRHhcd10m2mrfKErbptDi4/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "key_date": "={{ $('Append or update row in sheet').item.json.key_date }}",
+            "Status": "생성완료",
+            "scene_Narration": "={{ $json.content.parts[0].text.narrations[0] }},\n{{ $json.content.parts[0].text.narrations[1] }},\n{{ $json.content.parts[0].text.narrations[2] }}",
+            "scene_description": "={{ $json.content.parts[0].text.images[0].description }},\n{{ $json.content.parts[0].text.images[1].description }},\n{{ $json.content.parts[0].text.images[2].description }}",
+            "Link or Contents": "={{ $('Edit Fields1').item.json.data.data_key }}",
+            "Subject": "={{ $('Edit Fields1').item.json.data.tile_key }}"
+          },
+          "matchingColumns": [
+            "key_date"
+          ],
+          "schema": [
+            {
+              "id": "key_date",
+              "displayName": "key_date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Link or Contents",
+              "displayName": "Link or Contents",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Subject",
+              "displayName": "Subject",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "scene_Narration",
+              "displayName": "scene_Narration",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "scene_description",
+              "displayName": "scene_description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "shorts_URL",
+              "displayName": "shorts_URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2624,
+        0
+      ],
+      "id": "559beda8-a104-49b2-91c6-72b920f89dcd",
+      "name": "Append or update row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Cz2gX5oVbFdKVJYZ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "command": "=mkdir -p  {{ $json.resource_dir }} &&\ncd {{ $json.resource_dir }} &&\nrm -f *"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        2256,
+        592
+      ],
+      "id": "2dd9a1b2-b3db-4d8c-a866-a71d8421ef5e",
+      "name": "Execute Command1"
+    },
+    {
+      "parameters": {
+        "command": "=cd /home/node/outputs &&\nffmpeg -loop 1 -i out.png -f s16le -ar 24000 -ac 1 -i out.pcm -c:v libx264 -c:a aac -pix_fmt yuv420p -shortest out.mp4"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        4544,
+        1056
+      ],
+      "id": "b7966a67-dcf5-406d-bc6d-912e237667bf",
+      "name": "Execute Command"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        3952,
+        1056
+      ],
+      "id": "9223b24d-bd99-48b8-9fb5-f3038c51d245",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1KqTNLSOay4oNK8ag-_cQ1QRHhcd10m2mrfKErbptDi4",
+          "mode": "list",
+          "cachedResultName": "건강지킴이",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1KqTNLSOay4oNK8ag-_cQ1QRHhcd10m2mrfKErbptDi4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "시트1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1KqTNLSOay4oNK8ag-_cQ1QRHhcd10m2mrfKErbptDi4/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "key_date": "={{ $now }}",
+            "Subject": "={{ $today }}",
+            "Link or Contents": "=",
+            "Status": "생성완료",
+            "shorts_URL": "Yes"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "key_date",
+              "displayName": "key_date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Link or Contents",
+              "displayName": "Link or Contents",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Subject",
+              "displayName": "Subject",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "scene_Narration",
+              "displayName": "scene_Narration",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "scene_description",
+              "displayName": "scene_description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "shorts_URL",
+              "displayName": "shorts_URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        3536,
+        576
+      ],
+      "id": "54cc8f78-a7d0-4a5a-998c-27461e66d6cd",
+      "name": "Append or update row in sheet2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Cz2gX5oVbFdKVJYZ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.xml",
+      "typeVersion": 1,
+      "position": [
+        416,
+        0
+      ],
+      "id": "0e261826-eb22-4d5f-bb6b-3f23699c9c9f",
+      "name": "XML"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ad7cc5c3-1357-4f67-b023-0cc51fe4fc0c",
+              "name": "rss.channel.item[0].title",
+              "value": "={{ $json.rss.channel.item[0].title }}",
+              "type": "string"
+            },
+            {
+              "id": "ec7107fa-b3a4-4eb6-8e85-2983d2bfdd5e",
+              "name": "rss.channel.item[0].description",
+              "value": "={{ $json.rss.channel.item[0].description }}",
+              "type": "string"
+            },
+            {
+              "id": "b2d76d28-4739-44ed-abd5-f7f6658e7da3",
+              "name": "rss.channel.item[0].pubDate",
+              "value": "={{ $json.rss.channel.item[0].pubDate }}",
+              "type": "string"
+            },
+            {
+              "id": "b04f1805-94c4-405e-94af-2c10e9e70ec0",
+              "name": "rss.channel.item[0].link",
+              "value": "={{ $json.rss.channel.item[0].link }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        624,
+        0
+      ],
+      "id": "6508070c-eb5e-4749-bc13-ef744f7cccc3",
+      "name": "Edit Fields3"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        2464,
+        592
+      ],
+      "id": "2064f87f-f47e-4722-a885-0c443fd1ed13",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "name": "Replace Me",
+      "typeVersion": 1,
+      "position": [
+        4832,
+        1232
+      ],
+      "id": "1a8ed015-a35c-4eaf-a609-0fb236d1a6dc"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c6a5259a-8188-4bf0-b82b-2d92a7c4c428",
+              "name": "resource_dir",
+              "value": "/home/node/outputs/",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2528,
+        240
+      ],
+      "id": "f6f662c9-44bf-4617-baf3-69fb76d136bd",
+      "name": "Edit Fields5"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-goog-api-key",
+              "value": "AIzaSyCcPP-lZ2xkQG2TlPAaa_Mec_wEDdcgAfc"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"contents\": [{\n      \"parts\": [\n        {\"text\": \" {{ $('Edit Fields1').item.json.data.data_key }} 이미지로 생성\"}\n      ]\n    }]\n  }",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2944,
+        1136
+      ],
+      "id": "37ccb87c-3aa5-4030-8a76-fda502efd0bb",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-goog-api-key",
+              "value": "AIzaSyBb6SIyCPmLEwOQKb9T8c6O4ks7p3lSgrg"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n        \"contents\": [{\n          \"parts\":[{\n            \"text\": \"{{ $('Edit Fields').item.json.data.data_key }}\"\n          }]\n        }],\n        \"generationConfig\": {\n          \"responseModalities\": [\"AUDIO\"],\n          \"speechConfig\": {\n            \"voiceConfig\": {\n              \"prebuiltVoiceConfig\": {\n                \"voiceName\": \"Kore\"\n              }\n            }\n          }\n        }\n    }",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2912,
+        784
+      ],
+      "id": "ea4fa5b7-d035-46ad-9eab-67ca22b52b38",
+      "name": "HTTP Request4"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "candidates[0].content.parts[0].inlineData.data",
+        "options": {
+          "fileName": "={{ $('Edit Fields5').item.json.resource_dir }}out{{ $json.Index }}.pcm"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        3328,
+        784
+      ],
+      "id": "f346f97f-8c55-4608-9a86-325acff7b1cc",
+      "name": "Convert to File3"
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "={{ $('Edit Fields5').item.json.resource_dir }}out.pcm",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        3536,
+        784
+      ],
+      "id": "af614c2c-faa8-4da9-9003-1500c060b5dd",
+      "name": "Read/Write Files from Disk3"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "=candidates[0].content.parts[1].inlineData.data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        3360,
+        1136
+      ],
+      "id": "43ec7567-7dd8-46b4-b2e9-d41eb6d50f9a",
+      "name": "Convert to File4"
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "={{ $('Edit Fields5').item.json.resource_dir }}out.png",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        3568,
+        1136
+      ],
+      "id": "038d9d2e-d336-4f5f-b0a7-3955adf9b5b0",
+      "name": "Read/Write Files from Disk4"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "108bb952-0091-40ec-8d56-9c3d3dfe373c",
+              "name": "Index",
+              "value": "={{ $runIndex }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3120,
+        784
+      ],
+      "id": "1be19606-ede7-4f80-b382-82fb1a664992",
+      "name": "Edit Fields4"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "108bb952-0091-40ec-8d56-9c3d3dfe373c",
+              "name": "Index",
+              "value": "={{ $runIndex }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3152,
+        1136
+      ],
+      "id": "f8226d69-77e1-4ae5-a6ec-45b4ec89d6ea",
+      "name": "Edit Fields6"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "108bb952-0091-40ec-8d56-9c3d3dfe373c",
+              "name": "Index",
+              "value": "={{ $runIndex }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4192,
+        1056
+      ],
+      "id": "9ed09d8f-1ce6-408f-bff6-4e5711d88f6c",
+      "name": "Edit Fields7"
+    }
+  ],
+  "pinData": {
+    "When clicking ‘Execute workflow’": [
+      {
+        "json": {}
+      }
+    ],
+    "HTTP Request": [
+      {
+        "json": {
+          "data": "<?xml version=\"1.0\" encoding=\"UTF-8\" ?> \r\n<rss version=\"2.0\"> \r\n<channel> \r\n  <title>건강 보도자료 - 뉴스와이어</title>  \r\n  <link>https://www.newswire.co.kr/?md=A01&amp;cat=1000</link>  \r\n  <description>건강 보도자료 - 뉴스와이어 RSS 서비스</description>  \r\n  <lastBuildDate>Mon, 10 Nov 2025 15:58:06 +0900</lastBuildDate>  \r\n  <copyright>Copyright (c) 2004~2025 Korea Newswire All rights reserved</copyright>  \r\n  <webMaster>gichan2@newswire.co.kr</webMaster>  \r\n  <language>ko</language>  \r\n <image> \r\n  <title>Newswire</title>  \r\n  <url>https://static.newswire.co.kr/images/logo/logo_rss.png</url>  \r\n  <link>https://www.newswire.co.kr</link>  \r\n  <description>Newswire - 보도자료 통신사 뉴스와이어</description>  \r\n </image> \r\n  <item> \r\n  <title><![CDATA[어웰, 다이퀘스트와 손잡고 병원 AI 콜센터 혁신]]></title> \r\n  <link>https://www.newswire.co.kr/newsRead.php?no=1022642&amp;sourceType=rss</link> \r\n  <category></category> \r\n  <description><![CDATA[<table border=0 align=left cellspacing=0 cellpadding=0 cellpadding=3 style='font-size:100%;font-family:arial,sans-serif'><tr><td width=80 align=center style='padding-left:6px;' valign=top><a href='https://www.newswire.co.kr/newsRead.php?no=&amp;sourceType=rss' target=nw><img src=\"https://file.newswire.co.kr/data/datafile2/thumb/2025/11/2949752627_20251110151013_8102551473.png\" width=\"80\" border=\"0\" /></a></td></tr></table>페인터즈앤벤처스의 보육기업인 메디컬 커뮤니티·병원 성장 솔루션 전문기업 어웰(대표 김완)이 고객서비스 AX 전문기업 다이퀘스트(대표 전승훈)와 사업 협력 업무협약을 체결했다. 양사는 이번 협약을 통해 의료 산업 전반에서 협력 체계를 구축하고 공동 사업을 ...]]></description> \r\n  <pubDate>Mon, 10 Nov 2025 15:41:59 +0900</pubDate> \r\n  </item> \r\n  <item> \r\n  <title><![CDATA[비원 메디신스, 2025년 3분기 재무 실적 및 비즈니스 업데이트 발표]]></title> \r\n  <link>https://www.newswire.co.kr/newsRead.php?no=1022641&amp;sourceType=rss</link> \r\n  <category></category> \r\n  <description><![CDATA[글로벌 종양학 기업 비원 메디신스(BeOne Medicines Ltd. , 나스닥: ONC, 홍콩증권거래소: 06160, 상하이증권거래소: 688235)가 2025년 3분기 재무 실적 및 기업 업데이트를 발표했다. 존 V. 오일러(John V. Oyler) 비원 공동창립자이자 회장 겸 최고경영자는 “이번...]]></description> \r\n  <pubDate>Mon, 10 Nov 2025 15:40:00 +0900</pubDate> \r\n  </item> \r\n  <item> \r\n  <title><![CDATA[BeOne Medicines Announces Third Quarter 2025 Financial Results and Business Updates]]></title> \r\n  <link>https://www.newswire.co.kr/newsRead.php?no=1022640&amp;sourceType=rss</link> \r\n  <category></category> \r\n  <description><![CDATA[BeOne Medicines Ltd.  (NASDAQ: ONC; HKEX: 06160; SSE: 688235), a global oncology company, today announced financial results and corporate updates from the third quarter of 2025. “These strong financial results reinforce our position as a global on...]]></description> \r\n  <pubDate>Mon, 10 Nov 2025 15:40:00 +0900</pubDate> \r\n  </item> \r\n  <item> \r\n  <title><![CDATA[KH한국건강관리협회, 창립 61주년 기념식 개최… 국민 건강증진 61년 발자취 조명 및 비전 공유]]></title> \r\n  <link>https://www.newswire.co.kr/newsRead.php?no=1022632&amp;sourceType=rss</link> \r\n  <category></category> \r\n  <description><![CDATA[<table border=0 align=left cellspacing=0 cellpadding=0 cellpadding=3 style='font-size:100%;font-family:arial,sans-serif'><tr><td width=80 align=center style='padding-left:6px;' valign=top><a href='https://www.newswire.co.kr/newsRead.php?no=&amp;sourceType=rss' target=nw><img src=\"https://file.newswire.co.kr/data/datafile2/thumb/2025/11/3717424699_20251110114715_9901619824.jpg\" width=\"80\" border=\"0\" /></a></td></tr></table>KH한국건강관리협회(회장 김인원, 이하 건협)는 창립 61주년을 맞이해 11월 7일(금) 오전 11시 협회 본부에서 창립기념식을 개최했다고 밝혔다. 이번 기념식은 지난 61년간 국민 보건 향상과 건강증진에 이바지해 온 협회의 역사와 발자취를 되돌아보고, 미래 건강 ...]]></description> \r\n  <pubDate>Mon, 10 Nov 2025 13:04:58 +0900</pubDate> \r\n  </item> \r\n  <item> \r\n  <title><![CDATA[페인터즈앤벤처스, 2025년 전문 투자기관 연계형 투자유치 지원사업 데모데이 성료]]></title> \r\n  <link>https://www.newswire.co.kr/newsRead.php?no=1022624&amp;sourceType=rss</link> \r\n  <category></category> \r\n  <description><![CDATA[<table border=0 align=left cellspacing=0 cellpadding=0 cellpadding=3 style='font-size:100%;font-family:arial,sans-serif'><tr><td width=80 align=center style='padding-left:6px;' valign=top><a href='https://www.newswire.co.kr/newsRead.php?no=&amp;sourceType=rss' target=nw><img src=\"https://file.newswire.co.kr/data/datafile2/thumb/2025/11/1028147215_20251110112552_4335064814.png\" width=\"80\" border=\"0\" /></a></td></tr></table>페인터즈앤벤처스(대표 김경숙, 이정훈)가 11월 4일 라마다 동대문 메이플홀에서 ‘2025년 전문 투자기관 연계형 투자유치 지원사업’ 우수 바이오 스타트업의 데모데이를 성공적으로 개최했다고 밝혔다. 이번 데모데이는 한국보건산업진흥원이 주최하고 페인터즈앤벤...]]></description> \r\n  <pubDate>Mon, 10 Nov 2025 11:29:30 +0900</pubDate> \r\n  </item> \r\n  <item> \r\n  <title><![CDATA[오가논, 자다 시스템을 라보리에 최대 4억6500만달러에 매각하는 계약 체결 발표]]></title> \r\n  <link>https://www.newswire.co.kr/newsRead.php?no=1022587&amp;sourceType=rss</link> \r\n  <category></category> \r\n  <description><![CDATA[더 건강한 일상을 위한 영향력 있는 의약품과 솔루션을 제공한다는 사명을 가진 글로벌 헬스케어 기업 오가논(Organon, 뉴욕증권거래소 OGN)이 선도적인 진단 및 치료 의료 기술 기업인 라보리 메디컬 테크놀로지스(Laborie Medical Technologies Corp., 이하 라보리...]]></description> \r\n  <pubDate>Mon, 10 Nov 2025 10:15:00 +0900</pubDate> \r\n  </item> \r\n  <item> \r\n  <title><![CDATA[Organon Announces Agreement to Divest its JADA® System for Up to $465 Million to Laborie]]></title> \r\n  <link>https://www.newswire.co.kr/newsRead.php?no=1022583&amp;sourceType=rss</link> \r\n  <category></category> \r\n  <description><![CDATA[Organon (NYSE: OGN), (“Organon” or “the Company”) a global healthcare company with a mission to deliver impactful medicines and solutions for a healthier every day, announced today that it has entered into an agreement with Laborie Medical Technol...]]></description> \r\n  <pubDate>Mon, 10 Nov 2025 10:15:00 +0900</pubDate> \r\n  </item> \r\n  <item> \r\n  <title><![CDATA[영국에서 4년 만에 의사 된다… 사람사랑유학원, 우스터 대학교 의전원 합격생 배출]]></title> \r\n  <link>https://www.newswire.co.kr/newsRead.php?no=1022522&amp;sourceType=rss</link> \r\n  <category></category> \r\n  <description><![CDATA[<table border=0 align=left cellspacing=0 cellpadding=0 cellpadding=3 style='font-size:100%;font-family:arial,sans-serif'><tr><td width=80 align=center style='padding-left:6px;' valign=top><a href='https://www.newswire.co.kr/newsRead.php?no=&amp;sourceType=rss' target=nw><img src=\"https://file.newswire.co.kr/data/datafile2/thumb/2025/11/3666958735_20251107153553_5011693873.jpg\" width=\"80\" border=\"0\" /></a></td></tr></table>사람사랑유학원은 영국 우스터 대학교(University of Worcester) 의전원 합격생을 배출했다고 10일 밝혔다. 최근 한국에서는 의학 분야 진학에 대한 관심이 그 어느 때보다 높아지고 있다. 특히 국내 의대 입시의 치열한 경쟁으로 인해 다양한 진로와 국제적 교육 환...]]></description> \r\n  <pubDate>Mon, 10 Nov 2025 09:00:00 +0900</pubDate> \r\n  </item> \r\n  <item> \r\n  <title><![CDATA[Takeda Presents New Data Showing Mezagitamab (TAK-079) Sustained Effect on Kidney Function 18 Months After Treatment in Primary IgA Nephropathy]]></title> \r\n  <link>https://www.newswire.co.kr/newsRead.php?no=1022555&amp;sourceType=rss</link> \r\n  <category></category> \r\n  <description><![CDATA[Takeda (TSE:4502/NYSE:TAK ) today announced new interim data from the Phase 1b, open-label, proof-of-concept study of subcutaneous mezagitamab (TAK-079), an anti-CD38 monoclonal antibody with disease-modifying potential, in primary immunoglobulin ...]]></description> \r\n  <pubDate>Sun, 09 Nov 2025 09:50:08 +0900</pubDate> \r\n  </item> \r\n  <item> \r\n  <title><![CDATA[서울시 행복동행학교 ‘유스톡 프로젝트’ 수료식 성료… 약자와의 동행, 함께의 회복을 실천하다]]></title> \r\n  <link>https://www.newswire.co.kr/newsRead.php?no=1022531&amp;sourceType=rss</link> \r\n  <category></category> \r\n  <description><![CDATA[<table border=0 align=left cellspacing=0 cellpadding=0 cellpadding=3 style='font-size:100%;font-family:arial,sans-serif'><tr><td width=80 align=center style='padding-left:6px;' valign=top><a href='https://www.newswire.co.kr/newsRead.php?no=&amp;sourceType=rss' target=nw><img src=\"https://file.newswire.co.kr/data/datafile2/thumb/2025/11/3731674250_20251107162945_4752703515.jpg\" width=\"80\" border=\"0\" /></a></td></tr></table>서울시와 시립목동청소년센터(관장 김성만)는 지난 11월 1일(토) 은둔고립 청소년 마음건강 지원사업 ‘서울시 행복동행학교 유스톡 프로젝트’ 수료식을 성공적으로 개최했다. 행복동행학교는 서울시 핵심 시정 방향인 ‘약자와의 동행, 동행매력특별시 서울’을 실천하...]]></description> \r\n  <pubDate>Fri, 07 Nov 2025 17:30:00 +0900</pubDate> \r\n  </item> \r\n  <item> \r\n  <title><![CDATA[바디텍메드, 2025년 3분기 매출 399억원…신규 장비 설치 급증으로 성장 기반 강화]]></title> \r\n  <link>https://www.newswire.co.kr/newsRead.php?no=1022515&amp;sourceType=rss</link> \r\n  <category></category> \r\n  <description><![CDATA[현장진단 전문 기업 바디텍메드(대표이사 최의열)는 7일 2025년 3분기 연결 기준 잠정 실적을 발표하며 매출 399억원, 영업이익 66억원을 기록했다고 밝혔다. 이는 전년 동기 대비 매출 6.3% 증가, 영업이익 25.2% 감소한 수치다. 당기순이익은 78억원으로 전년 동기...]]></description> \r\n  <pubDate>Fri, 07 Nov 2025 14:06:24 +0900</pubDate> \r\n  </item> \r\n  <item> \r\n  <title><![CDATA[NJ바이오, L2P® 서비스 자산 인수 및 통합으로 중개 연구 격차 해소]]></title> \r\n  <link>https://www.newswire.co.kr/newsRead.php?no=1022490&amp;sourceType=rss</link> \r\n  <category></category> \r\n  <description><![CDATA[뉴저지주 프린스턴에 위치한 최고의 위탁 연구 및 임상 제조 서비스 제공업체인 NJ바이오(NJ Bio, Inc.)가 ‘연구실에서 약국까지(Lab to Pharmacy)’라는 의미의 L2P 리서치 랩스(L2P Research Labs®)의 연구 서비스 자산을 인수하고 전면 통합해, 서비스 포트폴리오...]]></description> \r\n  <pubDate>Fri, 07 Nov 2025 11:30:00 +0900</pubDate> \r\n  </item> \r\n  <item> \r\n  <title><![CDATA[NJ Bio Bridges the Translation Research Gap with the Asset Purchase and Integration of L2P® Services]]></title> \r\n  <link>https://www.newswire.co.kr/newsRead.php?no=1022489&amp;sourceType=rss</link> \r\n  <category></category> \r\n  <description><![CDATA[<table border=0 align=left cellspacing=0 cellpadding=0 cellpadding=3 style='font-size:100%;font-family:arial,sans-serif'><tr><td width=80 align=center style='padding-left:6px;' valign=top><a href='https://www.newswire.co.kr/newsRead.php?no=&amp;sourceType=rss' target=nw><img src=\"https://file.newswire.co.kr/data/datafile2/thumb/2025/11/31017998_20251107110850_9551313923.png\" width=\"80\" border=\"0\" /></a></td></tr></table>NJ Bio, Inc., a premier contract research and clinical manufacturing service provider in Princeton, New Jersey has announced the asset purchase and full integration of the research services of L2P Research Labs® (“Lab to Pharmacy”), further expand...]]></description> \r\n  <pubDate>Fri, 07 Nov 2025 11:30:00 +0900</pubDate> \r\n  </item> \r\n  <item> \r\n  <title><![CDATA[돋움병원, 전국 첫 ‘욕창전문병원’ 도전]]></title> \r\n  <link>https://www.newswire.co.kr/newsRead.php?no=1022428&amp;sourceType=rss</link> \r\n  <category></category> \r\n  <description><![CDATA[<table border=0 align=left cellspacing=0 cellpadding=0 cellpadding=3 style='font-size:100%;font-family:arial,sans-serif'><tr><td width=80 align=center style='padding-left:6px;' valign=top><a href='https://www.newswire.co.kr/newsRead.php?no=&amp;sourceType=rss' target=nw><img src=\"https://file.newswire.co.kr/data/datafile2/thumb/2025/11/31017998_20251107094014_9430105921.jpg\" width=\"80\" border=\"0\" /></a></td></tr></table>충남 천안의 돋움병원이 국내 최초 욕창 전문병원 모델 구축을 목표로 요양병원에서 100병상 규모의 급성기 병원으로 전환했다. 현재 보건복지부가 지정한 전문병원은 화상, 심뇌혈관, 척추, 관절 등 다양한 분야에 걸쳐 있지만, 욕창 전문병원 제도는 아직 존재하지...]]></description> \r\n  <pubDate>Fri, 07 Nov 2025 10:25:00 +0900</pubDate> \r\n  </item> \r\n  <item> \r\n  <title><![CDATA[보스턴 온콜로지 아라비아-사우디 현지화 정부 조달청, 사우디아라비아 내 첨단 바이오 의약품 현지화 계약 체결]]></title> \r\n  <link>https://www.newswire.co.kr/newsRead.php?no=1022462&amp;sourceType=rss</link> \r\n  <category></category> \r\n  <description><![CDATA[제약 현지 콘텐츠와 국가 의약품 안보를 발전시키기 위한 중요한 조치로, 보스턴 온콜로지 아라비아(BOSTON ONCOLOGY ARABIA)와 사우디아라비아의 현지화 정부 조달청(Local Content & Government Procurement Authority, LCGPA)이 사우디 내에서 두 가지 바이오시밀...]]></description> \r\n  <pubDate>Fri, 07 Nov 2025 10:10:00 +0900</pubDate> \r\n  </item> \r\n</channel> \r\n</rss> \r\n"
+        }
+      }
+    ],
+    "XML": [
+      {
+        "json": {
+          "rss": {
+            "version": "2.0",
+            "channel": {
+              "title": "건강 보도자료 - 뉴스와이어",
+              "link": "https://www.newswire.co.kr/?md=A01&cat=1000",
+              "description": "건강 보도자료 - 뉴스와이어 RSS 서비스",
+              "lastBuildDate": "Mon, 10 Nov 2025 15:58:06 +0900",
+              "copyright": "Copyright (c) 2004~2025 Korea Newswire All rights reserved",
+              "webMaster": "gichan2@newswire.co.kr",
+              "language": "ko",
+              "image": {
+                "title": "Newswire",
+                "url": "https://static.newswire.co.kr/images/logo/logo_rss.png",
+                "link": "https://www.newswire.co.kr",
+                "description": "Newswire - 보도자료 통신사 뉴스와이어"
+              },
+              "item": [
+                {
+                  "title": "어웰, 다이퀘스트와 손잡고 병원 AI 콜센터 혁신",
+                  "link": "https://www.newswire.co.kr/newsRead.php?no=1022642&sourceType=rss",
+                  "category": "",
+                  "description": "<table border=0 align=left cellspacing=0 cellpadding=0 cellpadding=3 style='font-size:100%;font-family:arial,sans-serif'><tr><td width=80 align=center style='padding-left:6px;' valign=top><a href='https://www.newswire.co.kr/newsRead.php?no=&amp;sourceType=rss' target=nw><img src=\"https://file.newswire.co.kr/data/datafile2/thumb/2025/11/2949752627_20251110151013_8102551473.png\" width=\"80\" border=\"0\" /></a></td></tr></table>페인터즈앤벤처스의 보육기업인 메디컬 커뮤니티·병원 성장 솔루션 전문기업 어웰(대표 김완)이 고객서비스 AX 전문기업 다이퀘스트(대표 전승훈)와 사업 협력 업무협약을 체결했다. 양사는 이번 협약을 통해 의료 산업 전반에서 협력 체계를 구축하고 공동 사업을 ...",
+                  "pubDate": "Mon, 10 Nov 2025 15:41:59 +0900"
+                },
+                {
+                  "title": "비원 메디신스, 2025년 3분기 재무 실적 및 비즈니스 업데이트 발표",
+                  "link": "https://www.newswire.co.kr/newsRead.php?no=1022641&sourceType=rss",
+                  "category": "",
+                  "description": "글로벌 종양학 기업 비원 메디신스(BeOne Medicines Ltd. , 나스닥: ONC, 홍콩증권거래소: 06160, 상하이증권거래소: 688235)가 2025년 3분기 재무 실적 및 기업 업데이트를 발표했다. 존 V. 오일러(John V. Oyler) 비원 공동창립자이자 회장 겸 최고경영자는 “이번...",
+                  "pubDate": "Mon, 10 Nov 2025 15:40:00 +0900"
+                },
+                {
+                  "title": "BeOne Medicines Announces Third Quarter 2025 Financial Results and Business Updates",
+                  "link": "https://www.newswire.co.kr/newsRead.php?no=1022640&sourceType=rss",
+                  "category": "",
+                  "description": "BeOne Medicines Ltd.  (NASDAQ: ONC; HKEX: 06160; SSE: 688235), a global oncology company, today announced financial results and corporate updates from the third quarter of 2025. “These strong financial results reinforce our position as a global on...",
+                  "pubDate": "Mon, 10 Nov 2025 15:40:00 +0900"
+                },
+                {
+                  "title": "KH한국건강관리협회, 창립 61주년 기념식 개최… 국민 건강증진 61년 발자취 조명 및 비전 공유",
+                  "link": "https://www.newswire.co.kr/newsRead.php?no=1022632&sourceType=rss",
+                  "category": "",
+                  "description": "<table border=0 align=left cellspacing=0 cellpadding=0 cellpadding=3 style='font-size:100%;font-family:arial,sans-serif'><tr><td width=80 align=center style='padding-left:6px;' valign=top><a href='https://www.newswire.co.kr/newsRead.php?no=&amp;sourceType=rss' target=nw><img src=\"https://file.newswire.co.kr/data/datafile2/thumb/2025/11/3717424699_20251110114715_9901619824.jpg\" width=\"80\" border=\"0\" /></a></td></tr></table>KH한국건강관리협회(회장 김인원, 이하 건협)는 창립 61주년을 맞이해 11월 7일(금) 오전 11시 협회 본부에서 창립기념식을 개최했다고 밝혔다. 이번 기념식은 지난 61년간 국민 보건 향상과 건강증진에 이바지해 온 협회의 역사와 발자취를 되돌아보고, 미래 건강 ...",
+                  "pubDate": "Mon, 10 Nov 2025 13:04:58 +0900"
+                },
+                {
+                  "title": "페인터즈앤벤처스, 2025년 전문 투자기관 연계형 투자유치 지원사업 데모데이 성료",
+                  "link": "https://www.newswire.co.kr/newsRead.php?no=1022624&sourceType=rss",
+                  "category": "",
+                  "description": "<table border=0 align=left cellspacing=0 cellpadding=0 cellpadding=3 style='font-size:100%;font-family:arial,sans-serif'><tr><td width=80 align=center style='padding-left:6px;' valign=top><a href='https://www.newswire.co.kr/newsRead.php?no=&amp;sourceType=rss' target=nw><img src=\"https://file.newswire.co.kr/data/datafile2/thumb/2025/11/1028147215_20251110112552_4335064814.png\" width=\"80\" border=\"0\" /></a></td></tr></table>페인터즈앤벤처스(대표 김경숙, 이정훈)가 11월 4일 라마다 동대문 메이플홀에서 ‘2025년 전문 투자기관 연계형 투자유치 지원사업’ 우수 바이오 스타트업의 데모데이를 성공적으로 개최했다고 밝혔다. 이번 데모데이는 한국보건산업진흥원이 주최하고 페인터즈앤벤...",
+                  "pubDate": "Mon, 10 Nov 2025 11:29:30 +0900"
+                },
+                {
+                  "title": "오가논, 자다 시스템을 라보리에 최대 4억6500만달러에 매각하는 계약 체결 발표",
+                  "link": "https://www.newswire.co.kr/newsRead.php?no=1022587&sourceType=rss",
+                  "category": "",
+                  "description": "더 건강한 일상을 위한 영향력 있는 의약품과 솔루션을 제공한다는 사명을 가진 글로벌 헬스케어 기업 오가논(Organon, 뉴욕증권거래소 OGN)이 선도적인 진단 및 치료 의료 기술 기업인 라보리 메디컬 테크놀로지스(Laborie Medical Technologies Corp., 이하 라보리...",
+                  "pubDate": "Mon, 10 Nov 2025 10:15:00 +0900"
+                },
+                {
+                  "title": "Organon Announces Agreement to Divest its JADA® System for Up to $465 Million to Laborie",
+                  "link": "https://www.newswire.co.kr/newsRead.php?no=1022583&sourceType=rss",
+                  "category": "",
+                  "description": "Organon (NYSE: OGN), (“Organon” or “the Company”) a global healthcare company with a mission to deliver impactful medicines and solutions for a healthier every day, announced today that it has entered into an agreement with Laborie Medical Technol...",
+                  "pubDate": "Mon, 10 Nov 2025 10:15:00 +0900"
+                },
+                {
+                  "title": "영국에서 4년 만에 의사 된다… 사람사랑유학원, 우스터 대학교 의전원 합격생 배출",
+                  "link": "https://www.newswire.co.kr/newsRead.php?no=1022522&sourceType=rss",
+                  "category": "",
+                  "description": "<table border=0 align=left cellspacing=0 cellpadding=0 cellpadding=3 style='font-size:100%;font-family:arial,sans-serif'><tr><td width=80 align=center style='padding-left:6px;' valign=top><a href='https://www.newswire.co.kr/newsRead.php?no=&amp;sourceType=rss' target=nw><img src=\"https://file.newswire.co.kr/data/datafile2/thumb/2025/11/3666958735_20251107153553_5011693873.jpg\" width=\"80\" border=\"0\" /></a></td></tr></table>사람사랑유학원은 영국 우스터 대학교(University of Worcester) 의전원 합격생을 배출했다고 10일 밝혔다. 최근 한국에서는 의학 분야 진학에 대한 관심이 그 어느 때보다 높아지고 있다. 특히 국내 의대 입시의 치열한 경쟁으로 인해 다양한 진로와 국제적 교육 환...",
+                  "pubDate": "Mon, 10 Nov 2025 09:00:00 +0900"
+                },
+                {
+                  "title": "Takeda Presents New Data Showing Mezagitamab (TAK-079) Sustained Effect on Kidney Function 18 Months After Treatment in Primary IgA Nephropathy",
+                  "link": "https://www.newswire.co.kr/newsRead.php?no=1022555&sourceType=rss",
+                  "category": "",
+                  "description": "Takeda (TSE:4502/NYSE:TAK ) today announced new interim data from the Phase 1b, open-label, proof-of-concept study of subcutaneous mezagitamab (TAK-079), an anti-CD38 monoclonal antibody with disease-modifying potential, in primary immunoglobulin ...",
+                  "pubDate": "Sun, 09 Nov 2025 09:50:08 +0900"
+                },
+                {
+                  "title": "서울시 행복동행학교 ‘유스톡 프로젝트’ 수료식 성료… 약자와의 동행, 함께의 회복을 실천하다",
+                  "link": "https://www.newswire.co.kr/newsRead.php?no=1022531&sourceType=rss",
+                  "category": "",
+                  "description": "<table border=0 align=left cellspacing=0 cellpadding=0 cellpadding=3 style='font-size:100%;font-family:arial,sans-serif'><tr><td width=80 align=center style='padding-left:6px;' valign=top><a href='https://www.newswire.co.kr/newsRead.php?no=&amp;sourceType=rss' target=nw><img src=\"https://file.newswire.co.kr/data/datafile2/thumb/2025/11/3731674250_20251107162945_4752703515.jpg\" width=\"80\" border=\"0\" /></a></td></tr></table>서울시와 시립목동청소년센터(관장 김성만)는 지난 11월 1일(토) 은둔고립 청소년 마음건강 지원사업 ‘서울시 행복동행학교 유스톡 프로젝트’ 수료식을 성공적으로 개최했다. 행복동행학교는 서울시 핵심 시정 방향인 ‘약자와의 동행, 동행매력특별시 서울’을 실천하...",
+                  "pubDate": "Fri, 07 Nov 2025 17:30:00 +0900"
+                },
+                {
+                  "title": "바디텍메드, 2025년 3분기 매출 399억원…신규 장비 설치 급증으로 성장 기반 강화",
+                  "link": "https://www.newswire.co.kr/newsRead.php?no=1022515&sourceType=rss",
+                  "category": "",
+                  "description": "현장진단 전문 기업 바디텍메드(대표이사 최의열)는 7일 2025년 3분기 연결 기준 잠정 실적을 발표하며 매출 399억원, 영업이익 66억원을 기록했다고 밝혔다. 이는 전년 동기 대비 매출 6.3% 증가, 영업이익 25.2% 감소한 수치다. 당기순이익은 78억원으로 전년 동기...",
+                  "pubDate": "Fri, 07 Nov 2025 14:06:24 +0900"
+                },
+                {
+                  "title": "NJ바이오, L2P® 서비스 자산 인수 및 통합으로 중개 연구 격차 해소",
+                  "link": "https://www.newswire.co.kr/newsRead.php?no=1022490&sourceType=rss",
+                  "category": "",
+                  "description": "뉴저지주 프린스턴에 위치한 최고의 위탁 연구 및 임상 제조 서비스 제공업체인 NJ바이오(NJ Bio, Inc.)가 ‘연구실에서 약국까지(Lab to Pharmacy)’라는 의미의 L2P 리서치 랩스(L2P Research Labs®)의 연구 서비스 자산을 인수하고 전면 통합해, 서비스 포트폴리오...",
+                  "pubDate": "Fri, 07 Nov 2025 11:30:00 +0900"
+                },
+                {
+                  "title": "NJ Bio Bridges the Translation Research Gap with the Asset Purchase and Integration of L2P® Services",
+                  "link": "https://www.newswire.co.kr/newsRead.php?no=1022489&sourceType=rss",
+                  "category": "",
+                  "description": "<table border=0 align=left cellspacing=0 cellpadding=0 cellpadding=3 style='font-size:100%;font-family:arial,sans-serif'><tr><td width=80 align=center style='padding-left:6px;' valign=top><a href='https://www.newswire.co.kr/newsRead.php?no=&amp;sourceType=rss' target=nw><img src=\"https://file.newswire.co.kr/data/datafile2/thumb/2025/11/31017998_20251107110850_9551313923.png\" width=\"80\" border=\"0\" /></a></td></tr></table>NJ Bio, Inc., a premier contract research and clinical manufacturing service provider in Princeton, New Jersey has announced the asset purchase and full integration of the research services of L2P Research Labs® (“Lab to Pharmacy”), further expand...",
+                  "pubDate": "Fri, 07 Nov 2025 11:30:00 +0900"
+                },
+                {
+                  "title": "돋움병원, 전국 첫 ‘욕창전문병원’ 도전",
+                  "link": "https://www.newswire.co.kr/newsRead.php?no=1022428&sourceType=rss",
+                  "category": "",
+                  "description": "<table border=0 align=left cellspacing=0 cellpadding=0 cellpadding=3 style='font-size:100%;font-family:arial,sans-serif'><tr><td width=80 align=center style='padding-left:6px;' valign=top><a href='https://www.newswire.co.kr/newsRead.php?no=&amp;sourceType=rss' target=nw><img src=\"https://file.newswire.co.kr/data/datafile2/thumb/2025/11/31017998_20251107094014_9430105921.jpg\" width=\"80\" border=\"0\" /></a></td></tr></table>충남 천안의 돋움병원이 국내 최초 욕창 전문병원 모델 구축을 목표로 요양병원에서 100병상 규모의 급성기 병원으로 전환했다. 현재 보건복지부가 지정한 전문병원은 화상, 심뇌혈관, 척추, 관절 등 다양한 분야에 걸쳐 있지만, 욕창 전문병원 제도는 아직 존재하지...",
+                  "pubDate": "Fri, 07 Nov 2025 10:25:00 +0900"
+                },
+                {
+                  "title": "보스턴 온콜로지 아라비아-사우디 현지화 정부 조달청, 사우디아라비아 내 첨단 바이오 의약품 현지화 계약 체결",
+                  "link": "https://www.newswire.co.kr/newsRead.php?no=1022462&sourceType=rss",
+                  "category": "",
+                  "description": "제약 현지 콘텐츠와 국가 의약품 안보를 발전시키기 위한 중요한 조치로, 보스턴 온콜로지 아라비아(BOSTON ONCOLOGY ARABIA)와 사우디아라비아의 현지화 정부 조달청(Local Content & Government Procurement Authority, LCGPA)이 사우디 내에서 두 가지 바이오시밀...",
+                  "pubDate": "Fri, 07 Nov 2025 10:10:00 +0900"
+                }
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "Edit Fields3": [
+      {
+        "json": {
+          "rss": {
+            "channel": {
+              "item": [
+                {
+                  "title": "어웰, 다이퀘스트와 손잡고 병원 AI 콜센터 혁신",
+                  "description": "<table border=0 align=left cellspacing=0 cellpadding=0 cellpadding=3 style='font-size:100%;font-family:arial,sans-serif'><tr><td width=80 align=center style='padding-left:6px;' valign=top><a href='https://www.newswire.co.kr/newsRead.php?no=&amp;sourceType=rss' target=nw><img src=\"https://file.newswire.co.kr/data/datafile2/thumb/2025/11/2949752627_20251110151013_8102551473.png\" width=\"80\" border=\"0\" /></a></td></tr></table>페인터즈앤벤처스의 보육기업인 메디컬 커뮤니티·병원 성장 솔루션 전문기업 어웰(대표 김완)이 고객서비스 AX 전문기업 다이퀘스트(대표 전승훈)와 사업 협력 업무협약을 체결했다. 양사는 이번 협약을 통해 의료 산업 전반에서 협력 체계를 구축하고 공동 사업을 ...",
+                  "pubDate": "Mon, 10 Nov 2025 15:41:59 +0900",
+                  "link": "https://www.newswire.co.kr/newsRead.php?no=1022642&sourceType=rss"
+                }
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "Message a model": [
+      {
+        "json": {
+          "content": {
+            "parts": [
+              {
+                "text": "{\n  \"tile_key\": \"우리 회사도 AI 전문가? 유클릭, 레드햇과 LLMOps 시장 정조준!\",\n  \"data_key\": \"AI 인프라 기업 유클릭이 레드햇과 파트너십을 맺고 LLMOps 시장 공략을 본격화합니다. ‘레드햇 오픈시프트 AI’를 기반으로 기업이 자체 거대 언어 모델을 안정적으로 개발, 운영할 수 있는 환경 구축을 지원하는데요. 컨설팅부터 기술 지원까지! 기업의 AI 도입이 빨라집니다.\"\n}"
+              }
+            ],
+            "role": "model"
+          },
+          "finishReason": "STOP",
+          "index": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "XML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Message a model1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Command1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "XML": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request4",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace Me": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Command": {
+      "main": [
+        [
+          {
+            "node": "Replace Me",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields5": {
+      "main": [
+        [
+          {
+            "node": "Execute Command1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request4": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File3": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File4": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk3": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk4": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Edit Fields4": {
+      "main": [
+        [
+          {
+            "node": "Convert to File3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields6": {
+      "main": [
+        [
+          {
+            "node": "Convert to File4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields7": {
+      "main": [
+        [
+          {
+            "node": "Execute Command",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "159901eb-cecf-48ec-9d8c-8793cbe30df3",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5f0a862ca69cb298a4e504f8a47b10e062b10f6dd4a85288950ab4d6fba0e665"
+  },
+  "id": "goyTIjyLf0o8rc8p",
+  "tags": []
+}
