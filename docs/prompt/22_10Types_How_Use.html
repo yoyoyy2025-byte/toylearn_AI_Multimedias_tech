@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ko" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>영상 리뷰 대시보드 프로토타입</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        // 다크 모드에 어울리는 커스텀 색상
+                        brand: {
+                            primary: '#1e40af', // (blue-700)
+                            secondary: '#be123c', // (rose-700)
+                        }
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        /* 스크롤바 등 세부 스타일 */
+        body {
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none; /* Firefox */
+        }
+        body::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, and Opera */
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-200 font-sans leading-normal tracking-normal p-4 sm:p-8">
+
+    <div class="container mx-auto max-w-screen-xl">
+
+        <!-- 페이지 헤더 -->
+        <header class="mb-6">
+            <h1 class="text-3xl font-bold text-white">🎬 영상 리뷰 대시보드</h1>
+            <p class="text-gray-400">이해관계자 의견 조율을 위한 신속 프로토타입</p>
+        </header>
+
+        <!-- 메인 레이아웃 (2단 컬럼) -->
+        <div class="flex flex-col lg:flex-row lg:space-x-8">
+
+            <!-- 좌측 컬럼 (영상 및 댓글) -->
+            <main class="w-full lg:w-2/3 mb-8 lg:mb-0">
+                
+                <!-- 1. 영상 플레이어 영역 -->
+                <section class="mb-6">
+                    <!-- Placeholder for video player -->
+                    <div class="w-full h-72 sm:h-96 bg-black rounded-lg flex items-center justify-center border border-gray-700">
+                        <span class="text-gray-500 text-lg">영상 플레이어 영역</span>
+                    </div>
+                </section>
+
+                <!-- 2. 액션 버튼 -->
+                <section class="mb-6 flex space-x-4">
+                    <button id="approve-btn" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition duration-300 ease-in-out">
+                        ✅ 승인 (Approve)
+                    </button>
+                    <button id="reject-btn" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition duration-300 ease-in-out">
+                        ❌ 반려 (Reject)
+                    </button>
+                </section>
+
+                <!-- 3. 타임스탬프 댓글 -->
+                <section>
+                    <h2 class="text-2xl font-semibold mb-4 text-white">타임스탬프 댓글</h2>
+                    
+                    <!-- 댓글 입력 폼 -->
+                    <form id="comment-form" class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 mb-6">
+                        <input type="text" id="timestamp-input" placeholder="타임스탬프 (예: 01:30)" class="w-full sm:w-1/4 bg-gray-800 border border-gray-700 text-gray-200 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <input type="text" id="comment-input" placeholder="댓글 내용" class="w-full sm:w-2/4 bg-gray-800 border border-gray-700 text-gray-200 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <button type="submit" class="w-full sm:w-1/4 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow transition duration-300">
+                            등록
+                        </button>
+                    </form>
+
+                    <!-- 댓글 목록 -->
+                    <div id="comment-list" class="space-y-4 max-h-96 overflow-y-auto pr-2">
+                        <!-- Mock data will be injected by JS -->
+                    </div>
+                </section>
+
+            </main>
+
+            <!-- 우측 컬럼 (리뷰 목록 테이블) -->
+            <aside class="w-full lg:w-1/3">
+                <div class="bg-gray-800 p-6 rounded-lg shadow-xl border border-gray-700">
+                    <h2 class="text-2xl font-semibold mb-4 text-white">리뷰 대기 목록</h2>
+                    
+                    <!-- 데이터 밀집형 테이블 -->
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full text-left text-sm">
+                            <thead class="border-b border-gray-600">
+                                <tr>
+                                    <th scope="col" class="py-2 pr-4 font-medium">영상 제목</th>
+                                    <th scope="col" class="py-2 pr-4 font-medium">업로더</th>
+                                    <th scope="col" class="py-2 pr-4 font-medium">상태</th>
+                                </tr>
+                            </thead>
+                            <tbody id="review-table-body">
+                                <!-- Mock data will be injected by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </aside>
+
+        </div>
+    </div>
+
+    <!-- JavaScript 로직 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // --- Mock Data ---
+            const mockComments = [
+                { "timestamp": "00:45", "comment": "이 부분 BGM 볼륨을 10% 낮춰주세요.", "user": "기획팀_김" },
+                { "timestamp": "01:12", "comment": "로고 등장 모션이 너무 빨라요.", "user": "디자인팀_이" },
+                { "timestamp": "02:30", "comment": "오타 수정: '런칭' -> '출시'", "user": "운영팀_박" }
+            ];
+
+            const mockReviewList = [
+                { "title": "2분기 신제품 'NEO-1' 런칭", "uploader": "마케팅팀", "status": "승인" },
+                { "title": "2025년 기업 비전 선포식", "uploader": "경영지원팀", "status": "반려" },
+                { "title": "신규 입사자 온보딩 가이드", "uploader": "인사팀", "status": "대기" },
+                { "title": "분기 실적 발표 (내부용)", "uploader": "재무팀", "status": "대기" }
+            ];
+
+            const commentList = document.getElementById('comment-list');
+            const commentForm = document.getElementById('comment-form');
+            const timestampInput = document.getElementById('timestamp-input');
+            const commentInput = document.getElementById('comment-input');
+            const reviewTableBody = document.getElementById('review-table-body');
+
+            // --- Functions ---
+
+            /**
+             * Renders a single comment item.
+             * @param {object} comment - The comment object {timestamp, comment, user}
+             */
+            function renderComment(comment) {
+                const commentEl = document.createElement('div');
+                commentEl.className = 'bg-gray-800 border border-gray-700 p-4 rounded-lg shadow-md';
+                commentEl.innerHTML = `
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="font-bold text-blue-400">${comment.timestamp}</span>
+                        <span class="text-sm text-gray-400">${comment.user}</span>
+                    </div>
+                    <p class="text-gray-200">${comment.comment}</p>
+                `;
+                commentList.prepend(commentEl); // 새 댓글을 상단에 추가
+            }
+
+            /**
+             * Renders the review list table.
+             */
+            function renderReviewTable() {
+                reviewTableBody.innerHTML = ''; // Clear existing
+                mockReviewList.forEach(item => {
+                    const statusColor = getStatusColor(item.status);
+                    const row = document.createElement('tr');
+                    row.className = 'border-b border-gray-700 hover:bg-gray-700 transition duration-200';
+                    row.innerHTML = `
+                        <td class="py-3 pr-4">${item.title}</td>
+                        <td class="py-3 pr-4 text-gray-400">${item.uploader}</td>
+                        <td class="py-3 pr-4 font-medium ${statusColor}">${item.status}</td>
+                    `;
+                    reviewTableBody.appendChild(row);
+                });
+            }
+
+            /**
+             * Gets Tailwind CSS text color class based on status.
+             * @param {string} status - The status string
+             * @returns {string} - Tailwind color class
+             */
+            function getStatusColor(status) {
+                switch (status) {
+                    case '승인':
+                        return 'text-green-400';
+                    case '반려':
+                        return 'text-red-400';
+                    case '대기':
+                        return 'text-yellow-400';
+                    default:
+                        return 'text-gray-400';
+                }
+            }
+
+            // --- Event Listeners ---
+
+            /**
+             * Handles new comment submission.
+             */
+            commentForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const timestamp = timestampInput.value.trim();
+                const comment = commentInput.value.trim();
+
+                if (!timestamp || !comment) {
+                    // 간단한 유효성 검사 (실제 alert 대신 UI 피드백 권장)
+                    console.warn('Timestamp and comment are required.');
+                    timestampInput.classList.toggle('ring-2', !timestamp);
+                    timestampInput.classList.toggle('ring-red-500', !timestamp);
+                    commentInput.classList.toggle('ring-2', !comment);
+                    commentInput.classList.toggle('ring-red-500', !comment);
+                    return;
+                }
+
+                // UI에서 링 효과 제거
+                timestampInput.classList.remove('ring-2', 'ring-red-500');
+                commentInput.classList.remove('ring-2', 'ring-red-500');
+
+                const newComment = {
+                    timestamp: timestamp,
+                    comment: comment,
+                    user: "현재_사용자" // Placeholder for logged in user
+                };
+
+                renderComment(newComment);
+
+                // Reset form
+                timestampInput.value = '';
+                commentInput.value = '';
+                timestampInput.focus();
+            });
+
+            // --- Initial Load ---
+            mockComments.forEach(renderComment);
+            renderReviewTable();
+        });
+    </script>
+
+</body>
+</html>
